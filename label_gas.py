@@ -9,11 +9,10 @@ Workflow:
     5. Press Enter/Space to save mask + overlay and move to next image
     6. Outputs saved to masks/ and overlays/ next to the selected folder
 
-Controls:
-    Left Mouse   - Draw boundary
+    Controls:
+    Left Mouse   - Draw boundary (auto-fills on release)
     Right Mouse  - Erase
     Scroll / +/- - Adjust brush size
-    F            - Fill enclosed region
     Enter/Space  - Save & next
     N            - Skip (no label)
     C            - Clear mask
@@ -105,7 +104,7 @@ class GasLabelerApp:
 
         tk.Label(
             self._home_frame,
-            text="Draw = Left Mouse  |  Fill = F  |  Save = Enter  |  Skip = N  |  Erase = Right Mouse",
+            text="Draw = Left Mouse (auto-fills)  |  Save = Enter  |  Skip = N  |  Erase = Right Mouse",
             font=('Arial', 14),
             fg='#888888',
             bg='#1a1a1a',
@@ -145,7 +144,7 @@ class GasLabelerApp:
         tk.Label(
             self._labeling_frame,
             text=(
-                "Left Mouse = Draw  |  Right Mouse = Erase  |  F = Fill  |  "
+                "Left Mouse = Draw (auto-fills)  |  Right Mouse = Erase  |  "
                 "C = Clear  |  Enter/Space = Save  |  N = Skip  |  Escape = Home"
             ),
             font=('Arial', 11),
@@ -185,8 +184,6 @@ class GasLabelerApp:
         self._canvas.bind('<Configure>',        self._on_canvas_resize)
 
         # ── Keyboard bindings ─────────────────────────────────────────────
-        for key in ('<f>', '<F>'):
-            self.root.bind(key, lambda e: self._fill_region())
         for key in ('<Return>', '<space>'):
             self.root.bind(key, lambda e: self._save_and_next())
         for key in ('<n>', '<N>'):
@@ -372,6 +369,7 @@ class GasLabelerApp:
     def _on_draw_stop(self, event):
         self._drawing = False
         self._last_pt = None
+        self._fill_region()   # Auto-fill on every mouse release
 
     def _on_erase_start(self, event):
         self._erasing  = True
